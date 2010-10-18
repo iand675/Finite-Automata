@@ -1,0 +1,139 @@
+module Main where
+
+import DFA
+import NFA
+import GNFA
+import Regex
+import qualified Data.Map as M
+import qualified Data.Set as S
+-- main = mainLoop
+-- 
+-- mainLoop = do
+--     putStrLn "Please enter the number for the option you wish to use:"
+--     putStrLn "1. NFA"
+--     putStrLn "2. DFA"
+--     putStrLn "3. GNFA"
+--     putStrLn "4. Exit"
+--     option <- getLine
+--     case option of
+--         "1" -> nfa Nothing
+--         "2" -> dfa Nothing
+--         "3" -> gnfa Nothing
+--         "4" -> return ()
+--         _   -> putStrLn "Invalid option. Please try again." >> mainLoop
+-- 
+-- nfa Nothing = do
+--     putStrLn "Enter a list of states: (i.e. [1,2,3])"
+--     states <- fmap read getLine
+--     putStrLn "Enter a list of numbers for the alphabet (i.e. [0,1])"
+--     alpha <- fmap read getLine
+--     putStrLn "Enter a list of transitions in the following format:"
+--     putStrLn "[((start state, consumed value), [result states])]"
+--     putStrLn "Represent values as Just x for consumed values or Nothing for epsilon."
+--     trans <- fmap (read :: String -> [((Int, Maybe Int), [Int])]) getLine
+--     putStrLn "Enter the number of the start state:"
+--     start <- fmap read getLine
+--     putStrLn "Enter a list of end states:"
+--     end <- fmap read getLine
+--     let n = NFA (S.fromList states) (S.fromList alpha) (M.fromList $ fmap (\((a,b),c) -> ((a,b), S.fromList c)) trans) start (S.fromList end)
+--     putStrLn "I want to:"
+--     putStrLn "1. Convert an NFA to a DFA"
+--     putStrLn "2. Convert an NFA to a GNFA"
+--     putStrLn "3. Convert an NFA to a Regex"
+--     option <- getLine
+--     case option of
+--         "1" -> putStrLn (show $ toDFA n) >> dfa (Just $ toDFA n)
+--         "2" -> let g = toGNFA . toDFA $ n in putStrLn (show g) >> gnfa (Just g)
+--         "3" -> let r = toRegex . toGNFA . toDFA $ n in putStrLn (show r)
+--         _   -> putStrLn "Invalid option. Please try again." >> nfa (Just n)
+-- nfa (Just n) = do 
+--     putStrLn "I want to:"
+--     putStrLn "1. Convert an NFA to a DFA"
+--     putStrLn "2. Convert an NFA to a GNFA"
+--     putStrLn "3. Convert an NFA to a Regex"
+--     option <- getLine
+--     case option of
+--         "1" -> putStrLn (show $ toDFA n) >> dfa (Just $ toDFA n)
+--         "2" -> let g = toGNFA . toDFA $ n in putStrLn (show g) >> gnfa (Just g)
+--         "3" -> let r = toRegex . toGNFA . toDFA $ n in putStrLn (show r)
+--         _   -> putStrLn "Invalid option. Please try again." >> nfa (Just n)
+--         
+-- dfa Nothing = do
+--     putStrLn "Enter a list of states: (i.e. [1,2,3])"
+--     states <- fmap read getLine
+--     putStrLn "Enter a list of numbers for the alphabet (i.e. [0,1])"
+--     alpha <- fmap read getLine
+--     putStrLn "Enter a list of transitions in the following format:"
+--     putStrLn "[((start state, consumed value), result state)]"
+--     putStrLn "Represent all values as Ints."
+--     trans <- fmap (read :: String -> [((Int, Int), Int)]) getLine
+--     putStrLn "Enter the number of the start state:"
+--     start <- fmap read getLine
+--     putStrLn "Enter a list of end states:"
+--     end <- fmap read getLine
+--     let d = DFA (S.fromList states)
+--                 (S.fromList alpha)
+--                 (M.fromList trans)
+--                 start
+--                 (S.fromList end)
+--     putStrLn "I want to:"
+--     putStrLn "1. Union two DFAs"
+--     putStrLn "2. Convert a DFA to a GNFA"
+--     putStrLn "3. Convert a DFA to a Regex"
+--     option <- getLine
+--     case option of
+--         "1" -> do
+--             putStrLn "Please input a second DFA now:"
+--             putStrLn "Enter a list of states: (i.e. [1,2,3])"
+--             states <- fmap read getLine
+--             putStrLn "Enter a list of numbers for the alphabet (i.e. [0,1])"
+--             alpha <- fmap read getLine
+--             putStrLn "Enter a list of transitions in the following format:"
+--             putStrLn "[((start state, consumed value), result state)]"
+--             putStrLn "Represent all values as Ints."
+--             trans <- fmap (read :: String -> [((Int, Int), Int)]) getLine
+--             putStrLn "Enter the number of the start state:"
+--             start <- fmap read getLine
+--             putStrLn "Enter a list of end states:"
+--             end <- fmap read getLine
+--             let d2 = DFA (S.fromList states) (S.fromList alpha) (M.fromList trans) start (S.fromList end)
+--             let dr = union d d2
+--             putStrLn $ show dr
+--             dfa (Just dr)
+--         "2" -> let g = toGNFA d in putStrLn (show g) >> gnfa (Just g)
+--         "3" -> let r = toRegex . toGNFA $ d in putStrLn (show r)
+--         _   -> putStrLn "Invalid option. Please try again." >> dfa (Just d)
+-- dfa (Just d) = do
+--     putStrLn "I want to:"
+--     putStrLn "1. Union two DFAs"
+--     putStrLn "2. Convert a DFA to a GNFA"
+--     putStrLn "3. Convert a DFA to a Regex"
+--     option <- getLine
+--     case option of
+--         "1" -> do
+--             putStrLn "Please input a second DFA now:"
+--             putStrLn "Enter a list of states: (i.e. [1,2,3])"
+--             states <- fmap read getLine
+--             putStrLn "Enter a list of numbers for the alphabet (i.e. [0,1])"
+--             alpha <- fmap read getLine
+--             putStrLn "Enter a list of transitions in the following format:"
+--             putStrLn "[((start state, consumed value), result state)]"
+--             putStrLn "Represent all values as Ints."
+--             trans <- fmap (read :: String -> [((Int, Int), Int)]) getLine
+--             putStrLn "Enter the number of the start state:"
+--             start <- fmap read getLine
+--             putStrLn "Enter a list of end states:"
+--             end <- fmap read getLine
+--             let d2 = DFA (S.fromList states) (S.fromList alpha) (M.fromList trans) start (S.fromList end)
+--             let dr = union d d2
+--             putStrLn $ show dr
+--             dfa (Just dr)
+--         "2" -> let g = toGNFA d in putStrLn (show g) >> gnfa (Just g)
+--         "3" -> let r = toRegex . toGNFA $ d in putStrLn (show r)
+--         _   -> putStrLn "Invalid option. Please try again." >> dfa (Just d)
+-- gnfa Nothing = do
+--     putStrLn "You can't really use this option without converting a DFA into a GNFA first."
+--     mainLoop
+-- gnfa (Just g) = do
+--     putStrLn "Now converting to regex:"
+--     putStrLn $ show . toRegex $ g
